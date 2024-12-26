@@ -21,7 +21,6 @@ class ChannelsActivity : AppCompatActivity(), ChannelsAdapter.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inflate ViewBinding instead of using setContentView(R.layout.activity_channels)
         binding = ActivityChannelsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

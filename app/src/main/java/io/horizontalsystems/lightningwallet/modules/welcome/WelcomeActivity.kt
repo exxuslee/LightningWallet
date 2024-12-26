@@ -1,6 +1,7 @@
 package io.horizontalsystems.lightningwallet.modules.welcome
 
 import android.os.Bundle
+import android.util.Log
 import io.horizontalsystems.lightningwallet.BaseActivity
 import io.horizontalsystems.lightningwallet.R
 import io.horizontalsystems.lightningwallet.databinding.ActivityWelcomeBinding
@@ -13,10 +14,10 @@ class WelcomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
-
-        setContentView(R.layout.activity_welcome)
+        setContentView(binding.root)
 
         binding.buttonConnect.setOnClickListener {
+            Log.d("WelcomeActivity", it.toString())
             NodeCredentialsModule.start(this)
         }
 

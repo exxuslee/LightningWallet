@@ -26,7 +26,7 @@ class MainSettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainSettingsBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_main_settings)
+        setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
         val presenter = ViewModelProvider(this, MainSettingsModule.Factory()).get(MainSettingsPresenter::class.java)

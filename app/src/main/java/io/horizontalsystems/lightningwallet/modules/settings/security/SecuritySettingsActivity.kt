@@ -21,7 +21,7 @@ class SecuritySettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsSecurityBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_settings_security)
+        setContentView(binding.root)
 
         binding.shadowlessToolbar.bind(getString(R.string.Settings_SecurityCenter), TopMenuItem(R.drawable.ic_back, onClick = { onBackPressed() }))
 
