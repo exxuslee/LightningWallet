@@ -2,6 +2,7 @@ package io.horizontalsystems.lightningwallet
 
 import android.util.Log
 import androidx.preference.PreferenceManager
+import io.horizontalsystems.core.BuildConfig
 import io.horizontalsystems.core.CoreApp
 import io.horizontalsystems.core.ICoreApp
 import io.horizontalsystems.core.security.EncryptionManager

@@ -8,60 +8,61 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.lightningwallet.BaseActivity
 import io.horizontalsystems.lightningwallet.R
+import io.horizontalsystems.lightningwallet.databinding.ActivitySettingsSecurityBinding
 import io.horizontalsystems.lightningwallet.modules.main.MainModule
 import io.horizontalsystems.pin.PinModule
 import io.horizontalsystems.views.TopMenuItem
-import kotlinx.android.synthetic.main.activity_settings_security.*
 import kotlin.system.exitProcess
 
 class SecuritySettingsActivity : BaseActivity() {
-
+    private lateinit var binding: ActivitySettingsSecurityBinding
     private lateinit var viewModel: SecuritySettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivitySettingsSecurityBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_settings_security)
 
-        shadowlessToolbar.bind(getString(R.string.Settings_SecurityCenter), TopMenuItem(R.drawable.ic_back, onClick = { onBackPressed() }))
+        binding.shadowlessToolbar.bind(getString(R.string.Settings_SecurityCenter), TopMenuItem(R.drawable.ic_back, onClick = { onBackPressed() }))
 
         viewModel = ViewModelProvider(this).get(SecuritySettingsViewModel::class.java)
         viewModel.init()
 
-        changePin.setOnClickListener { viewModel.delegate.didTapEditPin() }
+        binding.changePin.setOnClickListener { viewModel.delegate.didTapEditPin() }
 
-        fingerprint.switchOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        binding.fingerprint.switchOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.delegate.didSwitchBiometricEnabled(isChecked)
         }
 
-        fingerprint.setOnClickListener {
-            fingerprint.switchToggle()
+        binding.fingerprint.setOnClickListener {
+            binding.fingerprint.switchToggle()
         }
 
-        enablePin.switchOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        binding.enablePin.switchOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.delegate.didSwitchPinSet(isChecked)
         }
 
-        enablePin.setOnClickListener {
-            enablePin.switchToggle()
+        binding.enablePin.setOnClickListener {
+            binding.enablePin.switchToggle()
         }
 
         //  Handling view model live events
 
         viewModel.pinSetLiveData.observe(this, Observer { pinEnabled ->
-            enablePin.switchIsChecked = pinEnabled
+            binding.enablePin.switchIsChecked = pinEnabled
         })
 
         viewModel.editPinVisibleLiveData.observe(this, Observer { pinEnabled ->
-            changePin.visibility = if (pinEnabled) View.VISIBLE else View.GONE
-            enablePin.bottomBorder = !pinEnabled
+            binding.changePin.visibility = if (pinEnabled) View.VISIBLE else View.GONE
+            binding.enablePin.bottomBorder = !pinEnabled
         })
 
         viewModel.biometricSettingsVisibleLiveData.observe(this, Observer { enabled ->
-            fingerprint.visibility = if (enabled) View.VISIBLE else View.GONE
+            binding.fingerprint.visibility = if (enabled) View.VISIBLE else View.GONE
         })
 
         viewModel.biometricEnabledLiveData.observe(this, Observer {
-            fingerprint.switchIsChecked = it
+            binding.fingerprint.switchIsChecked = it
         })
 
         //  router

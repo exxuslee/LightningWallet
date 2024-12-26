@@ -7,24 +7,27 @@ import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import io.horizontalsystems.core.BuildConfig
 import io.horizontalsystems.core.CoreApp
 import io.horizontalsystems.currencyswitcher.CurrencySwitcherModule
 import io.horizontalsystems.languageswitcher.LanguageSettingsActivity
 import io.horizontalsystems.languageswitcher.LanguageSwitcherModule
 import io.horizontalsystems.lightningwallet.BaseActivity
-import io.horizontalsystems.lightningwallet.BuildConfig
 import io.horizontalsystems.lightningwallet.R
+import io.horizontalsystems.lightningwallet.databinding.ActivityMainSettingsBinding
 import io.horizontalsystems.lightningwallet.helpers.ModuleCode
 import io.horizontalsystems.lightningwallet.modules.main.MainModule
 import io.horizontalsystems.lightningwallet.modules.settings.security.SecuritySettingsModule
-import kotlinx.android.synthetic.main.activity_main_settings.*
+
 
 class MainSettingsActivity : BaseActivity() {
+    private lateinit var binding: ActivityMainSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainSettingsBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_main_settings)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         val presenter = ViewModelProvider(this, MainSettingsModule.Factory()).get(MainSettingsPresenter::class.java)
         val presenterView = presenter.view as MainSettingsView
@@ -46,39 +49,39 @@ class MainSettingsActivity : BaseActivity() {
     }
 
     private fun bindViewListeners(presenter: MainSettingsPresenter) {
-        securityCenter.setOnClickListener {
+        binding.securityCenter.setOnClickListener {
             presenter.didTapSecurity()
         }
 
-        notifications.setOnClickListener {
+        binding.notifications.setOnClickListener {
             presenter.didTapNotifications()
         }
 
-        baseCurrency.setOnClickListener {
+        binding.baseCurrency.setOnClickListener {
             presenter.didTapBaseCurrency()
         }
 
-        language.setOnClickListener {
+        binding.language.setOnClickListener {
             presenter.didTapLanguage()
         }
 
-        lightMode.setOnClickListener {
-            lightMode.switchToggle()
+        binding.lightMode.setOnClickListener {
+            binding.lightMode.switchToggle()
         }
 
-        about.setOnClickListener {
+        binding.about.setOnClickListener {
             presenter.didTapAbout()
         }
 
-        report.setOnClickListener {
+        binding.report.setOnClickListener {
             presenter.didTapReportProblem()
         }
 
-        shareApp.setOnClickListener {
+        binding.shareApp.setOnClickListener {
             presenter.didTapTellFriends()
         }
 
-        companyLogo.setOnClickListener {
+        binding.companyLogo.setOnClickListener {
             presenter.didTapCompanyLogo()
         }
     }
@@ -86,23 +89,23 @@ class MainSettingsActivity : BaseActivity() {
     private fun subscribeToViewEvents(presenterView: MainSettingsView, presenter: MainSettingsPresenter) {
         presenterView.baseCurrency.observe(this, Observer { currency ->
             currency?.let {
-                baseCurrency.rightTitle = it
+                binding.baseCurrency.rightTitle = it
             }
         })
 
         presenterView.backedUp.observe(this, Observer { wordListBackedUp ->
-            securityCenter.badge = !wordListBackedUp
+            binding.securityCenter.badge = !wordListBackedUp
         })
 
         presenterView.language.observe(this, Observer { languageCode ->
             languageCode?.let {
-                language.rightTitle = it
+                binding.language.rightTitle = it
             }
         })
 
         presenterView.lightMode.observe(this, Observer { lightModeValue ->
             lightModeValue?.let {
-                lightMode.apply {
+                binding.lightMode.apply {
                     switchIsChecked = it
 
                     switchOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
@@ -116,7 +119,7 @@ class MainSettingsActivity : BaseActivity() {
             version?.let {
                 var appVersion = getString(R.string.Settings_InfoTitleWithVersion, it)
                 appVersion = "$appVersion (${BuildConfig.VERSION_CODE})"
-                appName.text = appVersion
+                binding.appName.text = appVersion
             }
         })
     }

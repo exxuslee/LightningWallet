@@ -5,24 +5,29 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.lightningwallet.BaseActivity
 import io.horizontalsystems.lightningwallet.R
+import io.horizontalsystems.lightningwallet.databinding.ActivitySendFormBinding
 import io.horizontalsystems.views.TopMenuItem
-import kotlinx.android.synthetic.main.activity_send_form.*
-
 
 class InputFormActivity : BaseActivity() {
 
     private lateinit var presenter: InputFormPresenter
 
+    // Declare View Binding object
+    private lateinit var binding: ActivitySendFormBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_send_form)
+
+        // Initialize View Binding
+        binding = ActivitySendFormBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val address = intent.getStringExtra(AddressKey) ?: run {
             finish()
             return
         }
 
-        shadowlessToolbar.bind(
+        binding.shadowlessToolbar.bind(
             getString(R.string.Send_Title, "BTC"),
             leftBtnItem = TopMenuItem(R.drawable.ic_lightning),
             rightBtnItem = TopMenuItem(text = R.string.Send_Close, onClick = { onBackPressed() })
@@ -38,9 +43,8 @@ class InputFormActivity : BaseActivity() {
         val view = presenter.view as InputFormView
 
         view.addressValue.observe(this, Observer {
-            addressInput.setText(it)
+            binding.addressInput.setText(it)
         })
-
     }
 
     companion object {

@@ -45,26 +45,23 @@ class BackgroundManager(application: Application) : Application.ActivityLifecycl
         refs++
     }
 
+    override fun onActivityResumed(activity: Activity) {}
+    override fun onActivityPaused(activity: Activity) {}
+
     override fun onActivityStopped(activity: Activity) {
         refs--
 
         if (refs == 0) {
-            //App is in background
+            // App is in background
             listeners.forEach { listener ->
                 listener.didEnterBackground()
             }
-
         }
     }
 
-    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {}
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
-    override fun onActivityPaused(p0: Activity?) {}
+    override fun onActivityDestroyed(activity: Activity) {}
 
-    override fun onActivityResumed(p0: Activity?) {}
-
-    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {}
-
-    override fun onActivityDestroyed(activity: Activity?) {}
-
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 }

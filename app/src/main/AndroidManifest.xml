@@ -17,9 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppTheme.DayNight"
+        tools:node="merge"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".modules.launcher.LauncherActivity">
+        <activity
+            android:name=".modules.launcher.LauncherActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

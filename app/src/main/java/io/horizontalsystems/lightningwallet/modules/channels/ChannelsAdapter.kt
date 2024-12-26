@@ -1,17 +1,14 @@
 package io.horizontalsystems.lightningwallet.modules.channels
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.horizontalsystems.core.setOnSingleClickListener
-import io.horizontalsystems.lightningwallet.R
+import io.horizontalsystems.lightningwallet.databinding.ViewHolderChannelBinding
 import io.horizontalsystems.lightningwallet.modules.channels.ChannelViewItem.UpdateType
 import io.horizontalsystems.views.helpers.AnimationHelper
-import io.horizontalsystems.views.inflate
 import io.horizontalsystems.views.showIf
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.view_holder_channel.*
 
 class ChannelsAdapter(private val listener: Listener) : RecyclerView.Adapter<ViewHolderChannel>() {
 
@@ -35,12 +32,11 @@ class ChannelsAdapter(private val listener: Listener) : RecyclerView.Adapter<Vie
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderChannel {
-        return ViewHolderChannel(inflate(parent, R.layout.view_holder_channel), listener)
+        val binding = ViewHolderChannelBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolderChannel(binding, listener)
     }
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: ViewHolderChannel, position: Int) {
     }
@@ -56,26 +52,25 @@ class ChannelsAdapter(private val listener: Listener) : RecyclerView.Adapter<Vie
     }
 }
 
-class ViewHolderChannel(override val containerView: View, private val listener: ChannelsAdapter.Listener)
-    : RecyclerView.ViewHolder(containerView), LayoutContainer {
+class ViewHolderChannel(private val binding: ViewHolderChannelBinding, private val listener: ChannelsAdapter.Listener)
+    : RecyclerView.ViewHolder(binding.root) {
 
     private var channelViewItem: ChannelViewItem? = null
 
     init {
-        containerView.isSelected = false
-        containerView.setOnClickListener {
+        binding.root.setOnClickListener {
             channelViewItem?.let {
                 listener.onItemClick(it)
             }
         }
 
-        buttonManage.setOnSingleClickListener {
+        binding.buttonManage.setOnSingleClickListener {
             channelViewItem?.let {
                 listener.onClickManage(it)
             }
         }
 
-        buttonInfo.setOnSingleClickListener {
+        binding.buttonInfo.setOnSingleClickListener {
             channelViewItem?.let {
                 listener.onClickInfo(it)
             }
@@ -86,22 +81,18 @@ class ViewHolderChannel(override val containerView: View, private val listener: 
         channelViewItem = item
 
         item.apply {
-            iconCoin.bind("BTC")
-
-            channelId.text = remotePubKey
-            channelState.text = state.name
+            binding.iconCoin.bind("BTC")
+            binding.channelId.text = remotePubKey
+            binding.channelState.text = state.name
 
             val total = localBalance + remoteBalance
+            binding.balanceCoin.text = "$total"
+            binding.balanceFiat.text = "$total"
+            binding.canSentAmount.text = "$localBalance"
+            binding.canReceiveAmount.text = "$remoteBalance"
 
-            balanceCoin.text = "$total"
-            balanceFiat.text = "$total"
-
-            canSentAmount.text = "$localBalance"
-            canReceiveAmount.text = "$remoteBalance"
-
-            containerView.isSelected = expanded
-
-            buttonsWrapper.showIf(expanded)
+            binding.root.isSelected = expanded
+            binding.buttonsWrapper.showIf(expanded)
         }
     }
 
@@ -115,12 +106,12 @@ class ViewHolderChannel(override val containerView: View, private val listener: 
     }
 
     private fun bindUpdateExpanded(item: ChannelViewItem) {
-        containerView.isSelected = item.expanded
+        binding.root.isSelected = item.expanded
 
         if (item.expanded) {
-            AnimationHelper.expand(buttonsWrapper)
+            AnimationHelper.expand(binding.buttonsWrapper)
         } else {
-            AnimationHelper.collapse(buttonsWrapper)
+            AnimationHelper.collapse(binding.buttonsWrapper)
         }
     }
 }

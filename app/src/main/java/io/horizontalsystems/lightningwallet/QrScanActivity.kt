@@ -13,16 +13,18 @@ import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.camera.CameraSettings
-import kotlinx.android.synthetic.main.activity_qr_scanner.*
+import io.horizontalsystems.lightningwallet.databinding.ActivityQrScannerBinding
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
 
-abstract class QrScanActivity: BaseActivity() {
+abstract class QrScanActivity : BaseActivity() {
+
+    private lateinit var binding: ActivityQrScannerBinding
 
     private val callback = BarcodeCallback {
-        barcodeView.pause()
-        //slow down fast transition to new window
+        binding.barcodeView.pause()
+        // Slow down fast transition to a new window
         Handler().postDelayed({
             onScan(it.text)
         }, 1000)
@@ -30,10 +32,12 @@ abstract class QrScanActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_qr_scanner)
-        appBarLayout.setPadding(0, getStatusBarHeight(), 0, 0)
+        binding = ActivityQrScannerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar)
+        binding.appBarLayout.setPadding(0, getStatusBarHeight(), 0, 0)
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.title = ""
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -42,11 +46,11 @@ abstract class QrScanActivity: BaseActivity() {
 
         initializeFromIntent(intent)
 
-        buttonPaste.setOnClickListener {
+        binding.buttonPaste.setOnClickListener {
             onPaste()
         }
 
-        barcodeView.decodeContinuous(callback)
+        binding.barcodeView.decodeContinuous(callback)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -61,7 +65,7 @@ abstract class QrScanActivity: BaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        barcodeView.pause()
+        binding.barcodeView.pause()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -77,15 +81,19 @@ abstract class QrScanActivity: BaseActivity() {
     protected fun openCameraWithPermission() {
         val perms = arrayOf(Manifest.permission.CAMERA)
         if (EasyPermissions.hasPermissions(this, *perms)) {
-            barcodeView.resume()
+            binding.barcodeView.resume()
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.NodeCredentials_PleaseGrantCameraPermission),
-                REQUEST_CAMERA_PERMISSION, *perms)
+            EasyPermissions.requestPermissions(
+                this,
+                getString(R.string.NodeCredentials_PleaseGrantCameraPermission),
+                REQUEST_CAMERA_PERMISSION,
+                *perms
+            )
         }
     }
 
     private fun resetErrorWithDelay() {
-        //reset after 3 seconds
+        // Reset after 3 seconds
         Handler().postDelayed({
             resetInput()
         }, 3 * 1000)
@@ -94,15 +102,15 @@ abstract class QrScanActivity: BaseActivity() {
     abstract fun resetInput()
 
     protected fun showDescription(descriptionText: Int) {
-        errorTxt.visibility = View.INVISIBLE
-        descriptionTxt.setText(descriptionText)
-        descriptionTxt.visibility = View.VISIBLE
+        binding.errorTxt.visibility = View.INVISIBLE
+        binding.descriptionTxt.setText(descriptionText)
+        binding.descriptionTxt.visibility = View.VISIBLE
     }
 
     protected fun showError(errorText: Int) {
-        descriptionTxt.visibility = View.INVISIBLE
-        errorTxt.setText(errorText)
-        errorTxt.visibility = View.VISIBLE
+        binding.descriptionTxt.visibility = View.INVISIBLE
+        binding.errorTxt.setText(errorText)
+        binding.errorTxt.visibility = View.VISIBLE
         resetErrorWithDelay()
     }
 
@@ -112,8 +120,7 @@ abstract class QrScanActivity: BaseActivity() {
         val decodeHints = DecodeHintManager.parseDecodeHints(intent)
         val settings = CameraSettings()
         if (intent.hasExtra(Intents.Scan.CAMERA_ID)) {
-            val cameraId =
-                intent.getIntExtra(Intents.Scan.CAMERA_ID, -1)
+            val cameraId = intent.getIntExtra(Intents.Scan.CAMERA_ID, -1)
             if (cameraId >= 0) {
                 settings.requestedCameraId = cameraId
             }
@@ -124,8 +131,8 @@ abstract class QrScanActivity: BaseActivity() {
         val characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET)
         val reader = MultiFormatReader()
         reader.setHints(decodeHints)
-        barcodeView.cameraSettings = settings
-        barcodeView.decoderFactory = DefaultDecoderFactory(
+        binding.barcodeView.cameraSettings = settings
+        binding.barcodeView.decoderFactory = DefaultDecoderFactory(
             decodeFormats,
             decodeHints,
             characterSet,
@@ -142,8 +149,7 @@ abstract class QrScanActivity: BaseActivity() {
         return result
     }
 
-    companion object{
+    companion object {
         private const val REQUEST_CAMERA_PERMISSION = 1
     }
-
 }

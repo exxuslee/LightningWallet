@@ -8,7 +8,7 @@ import io.horizontalsystems.lightningkit.remote.RemoteLndCredentials
 import io.horizontalsystems.lightningwallet.BaseActivity
 import io.horizontalsystems.lightningwallet.R
 import io.horizontalsystems.lightningwallet.modules.main.MainModule
-import kotlinx.android.synthetic.main.activity_connect.*
+import io.horizontalsystems.lightningwallet.databinding.ActivityConnectBinding // ViewBinding import
 
 class NodeConnectActivity : BaseActivity() {
 
@@ -16,9 +16,14 @@ class NodeConnectActivity : BaseActivity() {
     lateinit var router: NodeConnectRouter
     lateinit var view: NodeConnectView
 
+    private lateinit var binding: ActivityConnectBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_connect)
+
+        // Initialize View Binding
+        binding = ActivityConnectBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val credentials = intent.getParcelableExtra<RemoteLndCredentials>("credentials") ?: run {
             finish()
@@ -26,7 +31,7 @@ class NodeConnectActivity : BaseActivity() {
         }
 
         title = getString(R.string.Remote_Connect)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         presenter = ViewModelProvider(this, NodeConnectModule.Factory(credentials)).get(NodeConnectPresenter::class.java)
@@ -41,21 +46,21 @@ class NodeConnectActivity : BaseActivity() {
 
     private fun observeEvents() {
         view.showAddress.observe(this, Observer {
-            addressValue.text = it
+            binding.addressValue.text = it
         })
 
         view.showConnecting.observe(this, Observer {
-            buttonConnect.isEnabled = false
-            progress.visibility = View.VISIBLE
+            binding.buttonConnect.isEnabled = false
+            binding.progress.visibility = View.VISIBLE
         })
 
         view.hideConnecting.observe(this, Observer {
-            buttonConnect.isEnabled = true
-            progress.visibility = View.GONE
+            binding.buttonConnect.isEnabled = true
+            binding.progress.visibility = View.GONE
         })
 
         view.showError.observe(this, Observer {
-            addressValue.text = it
+            binding.addressValue.text = it
         })
 
         router.openMainModule.observe(this, Observer {
@@ -64,7 +69,7 @@ class NodeConnectActivity : BaseActivity() {
     }
 
     private fun observeActions() {
-        buttonConnect.setOnClickListener {
+        binding.buttonConnect.setOnClickListener {
             presenter.onClickConnect()
         }
     }
